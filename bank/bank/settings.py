@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-from secrets import HIDDEN_SECRET_KEY
+from .secrets import HIDDEN_SECRET_KEY
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -115,6 +115,8 @@ USE_TZ = True
 REST_FRAMEWORK = {
 
     'DATETIME_FORMAT': "%Y.%m.%d %H:%M:%S",
+    # 'DEFAULT_PERMISSION_CLASSES': ( 'rest_framework.permissions.IsAdminUser', 'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    #                                 'rest_framework.permissions.IsAuthenticated'),
 
 }
 
@@ -127,3 +129,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTH_USER_MODEL="bank_system.CustomUser"
