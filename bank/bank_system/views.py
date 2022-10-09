@@ -4,6 +4,21 @@ from rest_framework.response import Response
 from .models import Wallet, Transaction
 from .serializers import WalletSerializer, TransactionSerializer
 from rest_framework import generics
+from rest_framework import permissions
+from rest_framework.generics import CreateAPIView
+from django.contrib.auth import get_user_model
+
+from .serializers import UserSerializer
+
+
+class CreateUserView(CreateAPIView):
+
+    model = get_user_model()
+    permission_classes = [
+        permissions.AllowAny
+    ]
+    serializer_class = UserSerializer
+
 
 class WalletListCreate(generics.ListCreateAPIView):
     queryset = Wallet.objects.all()
@@ -12,7 +27,7 @@ class WalletListCreate(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = WalletSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        serializer.save(user=self.request.user)
         return Response({'post' : serializer.data})
 
 class WalletDetailView(generics.RetrieveDestroyAPIView):

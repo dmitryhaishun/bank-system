@@ -6,6 +6,6 @@ urlpatterns = [
     #path('wallets/<wallet_name>/', views.WalletDetailView.as_view()),
     path('wallets/transactions/', views.TransactionListCreate.as_view()),
     path('wallets/transactions/<int:id>/', views.TransactionDetailView.as_view()),
-    path('wallets/transactions/<wallet_name>/', views.TransactionListView.as_view())
-
+    path('wallets/transactions/<wallet_name>/', views.TransactionListView.as_view()),
+    path('register/', views.CreateUserView.as_view())
 ]
