@@ -2,8 +2,10 @@ from rest_framework import serializers
 from .models import Wallet, Transaction
 from django.contrib.auth import get_user_model
 
-UserModel = get_user_model()
+from decimal import Decimal
 
+UserModel = get_user_model()
+#TODO: ОГРАНИЧИТЬ МАКСИМАЛЬНОЕ КОЛВО КОШЕЛЬКОВ ДО 5
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -36,15 +38,45 @@ class WalletSerializer(serializers.ModelSerializer):
             validated_data['balance'] = 100.00
         return Wallet.objects.create(**validated_data)
 
+    # def validate(self, attrs):
+    #     instance = Wallet(**attrs)
+    #     instance.clean()
+    #     return attrs
+
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         exclude = []
 
     def create(self, validated_data):
-        if validated_data['sender'] == validated_data['receiver']:
-            validated_data['commision'] = 0.00
+        if Wallet.objects.filter(wallet_name=validated_data['sender']).values()[0]['currency'] != Wallet.objects.filter(wallet_name=validated_data['receiver']).values()[0]['currency']:
+            validated_data['status'] = 'FAILED'
+            if validated_data['sender'] == validated_data['receiver']:
+                validated_data['commision'] = Decimal('0.00')
+            else:
+                validated_data['commision'] = Decimal(validated_data['transfer_amount']) * Decimal('0.1')
+        elif validated_data['transfer_amount'] > Wallet.objects.filter(wallet_name=validated_data['sender']).values()[0]['balance']:
+            validated_data['status'] = 'FAILED'
+            if validated_data['sender'] == validated_data['receiver']:
+                validated_data['commision'] = Decimal('0.00')
+            else:
+                validated_data['commision'] = Decimal(validated_data['transfer_amount']) * Decimal('0.1')
         else:
-            validated_data['commision'] = validated_data['transfer_amount'] * 0.1
-            #TODO: дописать чтобы был перелив денег
+            if validated_data['sender'] == validated_data['receiver']:
+                validated_data['commision'] = Decimal('0.00')
+                Wallet.objects.filter(wallet_name=validated_data['sender']).update(balance=(
+                        Decimal(Wallet.objects.filter(wallet_name=validated_data['receiver']).values()[0]['balance'])
+                        - Decimal(validated_data['transfer_amount'])))
+                Wallet.objects.filter(wallet_name=validated_data['receiver']).update(balance=(
+                        Decimal(Wallet.objects.filter(wallet_name=validated_data['receiver']).values()[0]['balance'])
+                        + Decimal(validated_data['transfer_amount'])))
+            else:
+                validated_data['commision'] = Decimal(validated_data['transfer_amount']) * Decimal('0.1')
+                Wallet.objects.filter(wallet_name=validated_data['sender']).update(balance=(
+                        Decimal(Wallet.objects.filter(wallet_name=validated_data['receiver']).values()[0]['balance'])
+                        - Decimal(validated_data['transfer_amount'])))
+                Wallet.objects.filter(wallet_name=validated_data['receiver']).update(balance=(
+                        Decimal(Wallet.objects.filter(wallet_name=validated_data['receiver']).values()[0]['balance'])
+                        + Decimal(validated_data['transfer_amount'])
+                        - Decimal(validated_data['commision'])))
         return Transaction.objects.create(**validated_data)
