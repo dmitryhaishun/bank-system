@@ -26,7 +26,7 @@ class Wallet(models.Model):
             if wallet_name not in wallet_names:
                 return wallet_name
 
-
+    user = models.ForeignKey(CustomUser, to_field='id', on_delete=models.CASCADE, editable=False)
     wallet_name = models.CharField(max_length=8, default=get_random_string, editable=False, unique=True)
     wallet_type = models.CharField(max_length=10, choices=WALLET_TYPE_CHOICES, default='visa')
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='EUR')
@@ -38,7 +38,7 @@ class Wallet(models.Model):
         return self.wallet_name
 
 class Transaction(models.Model):
-    sender = models.ForeignKey(Wallet, to_field='wallet_name', related_name='senders', on_delete=models.CASCADE, )
+    sender = models.ForeignKey(Wallet, to_field='wallet_name', related_name='senders', on_delete=models.CASCADE,)
     receiver = models.ForeignKey(Wallet, to_field='wallet_name', related_name='receivers', on_delete=models.CASCADE)
     transfer_amount = models.FloatField(max_length=5, default=0.00)
     commision = models.FloatField(max_length=100, default=0.1, editable=False)
