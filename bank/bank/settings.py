@@ -51,6 +51,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "bank.wsgi.application"
 
+
+
 DATABASES = {
     "default": POSTGRES_DATA
 }

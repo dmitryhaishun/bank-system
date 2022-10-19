@@ -26,12 +26,29 @@ Then install the dependencies:
 ```sh
 (env)$ pip install -r requirements.txt
 ```
-Note the `(env)` in front of the prompt. This indicates that this terminal
-session operates in a virtual environment set up by `virtualenv2`.
+Create `secrets.py` file in `bank` folder, paste code and fill DB settings.
+
+```python
+from django.core.management.utils import get_random_secret_key
+
+HIDDEN_SECRET_KEY = get_random_secret_key()
+
+POSTGRES_DATA = {
+        "ENGINE": "django.db.backends.postgresql",   
+        "NAME": "",
+        "USER": "",         # Your Postgres DB settings
+        "PASSWORD": "",
+        "HOST": "",
+        "PORT": "",
+    }
+```
+
 
 Once `pip` has finished downloading the dependencies:
 ```sh
 (env)$ cd bank
+(env)$ python manage.py makemigrations
+(env)$ python manage.py migrate
 (env)$ python manage.py runserver
 ```
 And navigate to `http://127.0.0.1:8000/register` or `http://127.0.0.1:8000/wallets`.
