@@ -1,4 +1,4 @@
-from .secrets import HIDDEN_SECRET_KEY
+from .secrets import HIDDEN_SECRET_KEY, POSTGRES_DATA
 from pathlib import Path
 
 
@@ -52,14 +52,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "bank.wsgi.application"
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "railway",
-        "USER": "postgres",
-        "PASSWORD": "64r1hNWWHXcSk7NuvEHf",
-        "HOST": "containers-us-west-110.railway.app",
-        "PORT": "6681",
-    }
+    "default": POSTGRES_DATA
 }
 
 AUTH_PASSWORD_VALIDATORS = [
