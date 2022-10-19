@@ -19,6 +19,9 @@ python3 -m venv .venv
 # Windows
 # You can also use py -3 -m venv .venv
 python -m venv .venv
+
+# And then run venv
+.venv/scripts/activate  
 ```
 
 Then install the dependencies:
